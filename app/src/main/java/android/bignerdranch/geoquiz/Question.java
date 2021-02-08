@@ -17,12 +17,14 @@ public class Question {
         return mAnswerTrue;
     }
 
-    public void setmAnswerTrue(boolean mAnswerTrue) {
+    public void setmAnswerTrue(boolean mAnswerTrue)
+    {
         this.mAnswerTrue = mAnswerTrue;
     }
 
     public void setmTextResId(int textResId) {
         mTextResId = textResId;
     }
+
 }
 

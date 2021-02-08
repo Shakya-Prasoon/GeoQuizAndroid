@@ -14,7 +14,7 @@ public class QuizActivity extends AppCompatActivity {
     public static final String TAG = "QuizActivity";
     public static final String KEY_INDEX = "index";
     private Button mTrueButton, mFalseButton;
-    private Button mNextButton;
+    private Button mNextButton, mResetButton;
     private TextView mQuestionTextView;
     private Question[] mQuestionBank = new Question[] {
             new Question(R.string.question_australia, true),
@@ -25,6 +25,9 @@ public class QuizActivity extends AppCompatActivity {
             new Question(R.string.question_asia, true)
     };
     private int mCurrentIndex = 0;
+    private int mCorrect = 0;
+    private int mIncorrect = 0;
+    private Boolean mAnswer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +50,21 @@ public class QuizActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 mCurrentIndex = (mCurrentIndex + 1) % mQuestionBank.length;
+                if (mAnswer == true)
+                    mCorrect += 1;
+                else
+                    mIncorrect += 1;
+                updateQuestion();
+
+            }
+        });
+        mResetButton = (Button)findViewById(R.id.reset_button);
+        mResetButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCurrentIndex = 0;
+                mCorrect = 0;
+                mIncorrect = 0;
                 updateQuestion();
             }
         });
@@ -57,6 +75,10 @@ public class QuizActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
             // Code to execute on button click goes here.
+            if (mCurrentIndex == 0){
+                mCorrect = 0;
+                mIncorrect = 0;
+            }
             checkAnswer(true);
             }
         });
@@ -66,6 +88,10 @@ public class QuizActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
             // Code to execute on button click goes here.
+            if (mCurrentIndex == 0){
+                mCorrect = 0;
+                mIncorrect = 0;
+            }
             checkAnswer(false);
             }
         });
@@ -117,12 +143,28 @@ public class QuizActivity extends AppCompatActivity {
     private void checkAnswer(boolean userPressedTrue) {
         boolean answerIsTrue = mQuestionBank[mCurrentIndex].isAnswerTrue();
         int messageResId = 0;
+        String final_toast;
 
-        if(userPressedTrue == answerIsTrue)
+        if(userPressedTrue == answerIsTrue) {
             messageResId = R.string.correct_toast;
-        else
+            mAnswer = true;
+        }
+        else {
             messageResId = R.string.incorrect_toast;
+            mAnswer = false;
+        }
 
         Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show();
+
+        if (mCurrentIndex == mQuestionBank.length-1) {
+            if (mAnswer == true)
+                final_toast = getString(R.string.correct_count, (mCorrect+1)) + "\n" +
+                        getString(R.string.incorrect_count, mIncorrect);
+            else
+                final_toast = getString(R.string.correct_count, (mCorrect)) + "\n" +
+                        getString(R.string.incorrect_count, (mIncorrect+1));
+            Toast.makeText(this, final_toast, Toast.LENGTH_LONG).show();
+
+        }
     }
 }
